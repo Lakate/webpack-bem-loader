@@ -6,7 +6,7 @@ const path = require('path'),
     BemEntityName = require('@bem/entity-name'),
     bemFs = require('@bem/fs-scheme'),
     bemImport = require('@bem/import-notation'),
-    bemConfig = require('bem-config')(),
+    bemConfig = require('@bem/sdk.config')(),
     requiredPath = require('required-path'),
     falafel = require('falafel'),
     vow = require('vow'),
@@ -19,7 +19,10 @@ module.exports = function(source) {
 
     const callback = this.async(),
         options = Object.assign({}, this.options.bemLoader, loaderUtils.getOptions(this)),
-        levelsMap = options.levels || bemConfig.levelMapSync(),
+        setLevels = options.sets && bemConfig.levelsSync(options.sets) || [],
+        levelsMap = setLevels.length > 0 ?
+            setLevels.map(level => level.path) :
+            (options.levels || bemConfig.levelMapSync()),
         levels = Array.isArray(levelsMap) ? levelsMap : Object.keys(levelsMap),
         techs = options.techs || ['js'],
         langs = options.langs || ['en'],
